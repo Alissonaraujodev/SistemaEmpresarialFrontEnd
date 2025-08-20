@@ -1,0 +1,2 @@
+Se você quiser, posso criar também o layout base de cada página, para que já apareça título, tabela e botão de adicionar item, assim você terá tudo estruturado para começar a consumir o backend.
+
