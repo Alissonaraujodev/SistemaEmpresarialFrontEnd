@@ -1,32 +1,45 @@
-import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-
-import Navbar from "./components/NavBar";
-
-import LoginPage from "./pages/LoginPage";
-import ProdutosPage from "./pages/ProdutosPage";
-import ClientesPage from "./pages/ClientesPage";
-import VendasPage from "./pages/VendasPage";
 import CaixaPage from "./pages/CaixaPage";
+import ClientesPage from "./pages/ClientesPage";
+import Dashboard from "./pages/Dashboard";
 import FuncionariosPage from "./pages/FuncionariosPage";
+import LoginPage from "./pages/LoginPage";
 import PagamentosPage from "./pages/PagamentosPage";
+import ProdutosPage from "./pages/ProdutosPage";
 import RelatoriosPage from "./pages/RelatoriosPage";
-
-const isAuthenticated = () => !!localStorage.getItem("token");
+import VendasPage from "./pages/VendasPage";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Layout from "./components/Layout";
 
 export default function App() {
   return (
     <Router>
-      {isAuthenticated() && <Navbar />} {/* Mostra Navbar apenas se estiver logado */}
       <Routes>
+        {/* 🔹 Rota de login SEM NavBar */}
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/produtos" element={isAuthenticated() ? <ProdutosPage /> : <Navigate to="/login" />} />
-        <Route path="/clientes" element={isAuthenticated() ? <ClientesPage /> : <Navigate to="/login" />} />
-        <Route path="/vendas" element={isAuthenticated() ? <VendasPage /> : <Navigate to="/login" />} />
-        <Route path="/caixa" element={isAuthenticated() ? <CaixaPage /> : <Navigate to="/login" />} />
-        <Route path="/funcionarios" element={isAuthenticated() ? <FuncionariosPage /> : <Navigate to="/login" />} />
-        <Route path="/pagamentos" element={isAuthenticated() ? <PagamentosPage /> : <Navigate to="/login" />} />
-        <Route path="/relatorios" element={isAuthenticated() ? <RelatoriosPage /> : <Navigate to="/login" />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
+
+        {/* 🔹 Rotas protegidas COM Layout (NavBar) */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/dashboard" />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="produtos" element={<ProdutosPage />} />
+          <Route path="clientes" element={<ClientesPage />} />
+          <Route path="vendas" element={<VendasPage />} />
+          <Route path="caixa" element={<CaixaPage />} />
+          <Route path="relatorios" element={<RelatoriosPage />} />
+          <Route path="funcionarios" element={<FuncionariosPage />} />
+          <Route path="pagamentos" element={<PagamentosPage />} />
+        </Route>
+
+        {/* 🔹 Qualquer rota desconhecida manda para login */}
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </Router>

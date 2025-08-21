@@ -9,11 +9,12 @@ export default function LoginPage() {
     try {
       const response = await api.post("/auth/login", { email, senha });
 
-      // 1️⃣ Armazena o token no localStorage
+      // 🔹 Salva token e usuário no localStorage
       localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
 
-      // 2️⃣ Redireciona para a página principal (ex.: produtos)
-      navigate("/produtos");
+      // 🔹 Redireciona para o Layout (que tem o NavBar)
+      navigate("/");
 
       alert("Login bem-sucedido!");
     } catch (error) {
