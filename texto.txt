@@ -1,3 +1,7 @@
 Se você quiser, posso criar também o layout base de cada página, para que já apareça título, tabela e botão de adicionar item, assim você terá tudo estruturado para começar a consumir o backend.
 
 Se você quiser, posso te mostrar como deslogar o usuário automaticamente quando o token expirar, para manter a segurança.
+
+Quer que eu também te mostre como evitar que "undefined" seja salvo no localStorage lá no LoginPage.jsx
+
+Quer que eu já coloque um carrossel ou uma galeria de produtos na Home?

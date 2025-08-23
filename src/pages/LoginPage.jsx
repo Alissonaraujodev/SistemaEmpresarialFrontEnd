@@ -1,22 +1,19 @@
 import LoginForm from "../components/LoginForm";
 import api from "../api/api";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const navigate = useNavigate();
 
   const handleLogin = async ({ email, senha }) => {
     try {
-      const response = await api.post("/auth/login", { email, senha });
+      const { data } = await api.post("/auth/login", { email, senha });
 
-      // 🔹 Salva token e usuário no localStorage
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("user", JSON.stringify(response.data.user));
+      // IMPORTANTE: seu backend retorna "funcionario"
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.funcionario));
 
-      // 🔹 Redireciona para o Layout (que tem o NavBar)
-      navigate("/");
-
-      alert("Login bem-sucedido!");
+      navigate("/app/dashboard"); // vai para a área logada
     } catch (error) {
       console.error("Erro ao logar:", error.response?.data || error.message);
       alert("Erro no login!");
@@ -27,6 +24,11 @@ export default function LoginPage() {
     <div>
       <h1>Login</h1>
       <LoginForm onLogin={handleLogin} />
+
+      {/* 🔹 Botão para voltar à página inicial */}
+      <p style={{ marginTop: "15px" }}>
+        <Link to="/">← Voltar para a página inicial</Link>
+      </p>
     </div>
   );
 }

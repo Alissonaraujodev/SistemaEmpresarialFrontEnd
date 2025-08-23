@@ -8,6 +8,7 @@ import PagamentosPage from "./pages/PagamentosPage";
 import ProdutosPage from "./pages/ProdutosPage";
 import RelatoriosPage from "./pages/RelatoriosPage";
 import VendasPage from "./pages/VendasPage";
+import HomePage from "./pages/HomePage";   
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 
@@ -16,19 +17,20 @@ export default function App() {
     <Router>
       <Routes>
         {/* 🔹 Rota de login SEM NavBar */}
+        <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<Navigate to="/login" replace />} />
 
         {/* 🔹 Rotas protegidas COM Layout (NavBar) */}
         <Route
-          path="/"
+          path="/app"
           element={
             <ProtectedRoute>
               <Layout />
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="/dashboard" />} />
+          <Route index element={<Navigate to="/app/dashboard" />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="produtos" element={<ProdutosPage />} />
           <Route path="clientes" element={<ClientesPage />} />
@@ -40,7 +42,7 @@ export default function App() {
         </Route>
 
         {/* 🔹 Qualquer rota desconhecida manda para login */}
-        <Route path="*" element={<Navigate to="/login" />} />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
   );
