@@ -1,93 +1,69 @@
-import { useEffect, useState } from "react";
-import { listarProdutos, criarProduto, atualizarProduto, deletarProduto } from "../api/produtosApi";
+import React, { useState } from 'react';
+import CadastroProduto from '../components/Produtos/CadastroProduto';
+import ListarProdutos from '../components/Produtos/ListarProdutos';
+import BuscarProduto from '../components/Produtos/BuscarProduto';
+import EditarProduto from '../components/Produtos/EditarProduto';
 
 export default function ProdutosPage() {
-  const [produtos, setProdutos] = useState([]);
-  const [novoProduto, setNovoProduto] = useState({
-    nome: "",
-    descricao: "",
-    preco_custo: 0,
-    preco_venda: 0,
-    quantidade: 0,
-    codigo_barras: "",
-    codigo_referencia: "",
-    categoria: "",
-    tipo_produto: "padrao",
-  });
+  const [currentView, setCurrentView] = useState('lista');
+  const [produtoParaEditar, setProdutoParaEditar] = useState(null);
 
-  // Carregar lista de produtos ao iniciar
-  useEffect(() => {
-    carregarProdutos();
-  }, []);
-
-  const carregarProdutos = async () => {
-    try {
-      const data = await listarProdutos();
-      setProdutos(data);
-    } catch (error) {
-      console.error("Erro ao carregar produtos:", error);
-    }
+  const handleEditClick = (produto) => {
+    setProdutoParaEditar(produto);
+    setCurrentView('editar');
   };
 
-  const handleCriar = async () => {
-    try {
-      await criarProduto(novoProduto);
-      await carregarProdutos();
-      setNovoProduto({
-        nome: "",
-        descricao: "",
-        preco_custo: 0,
-        preco_venda: 0,
-        quantidade: 0,
-        codigo_barras: "",
-        codigo_referencia: "",
-        categoria: "",
-        tipo_produto: "padrao",
-      });
-    } catch (error) {
-      alert("Erro ao criar produto.");
-    }
+  const handleUpdateComplete = () => {
+    setProdutoParaEditar(null);
+    setCurrentView('lista');
   };
 
-  const handleExcluir = async (id) => {
-    if (window.confirm("Tem certeza que deseja excluir este produto?")) {
-      try {
-        await deletarProduto(id);
-        await carregarProdutos();
-      } catch (error) {
-        alert("Erro ao excluir produto.");
-      }
-    }
+  const handleCancelEdit = () => {
+    setProdutoParaEditar(null);
+    setCurrentView('lista');
   };
 
   return (
-    <div>
-      <h1>Produtos</h1>
+    <div className="p-8 bg-slate-100 min-h-screen">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-4xl font-bold text-slate-900 mb-8">Gerenciamento de Produtos</h1>
 
-      <h2>Criar Produto</h2>
-      <input
-        type="text"
-        placeholder="Nome"
-        value={novoProduto.nome}
-        onChange={(e) => setNovoProduto({ ...novoProduto, nome: e.target.value })}
-      />
-      <input
-        type="number"
-        placeholder="Preço de Venda"
-        value={novoProduto.preco_venda}
-        onChange={(e) => setNovoProduto({ ...novoProduto, preco_venda: e.target.value })}
-      />
-      <button onClick={handleCriar}>Adicionar Produto</button>
+        <div className="flex space-x-4 mb-8">
+          <button 
+            onClick={() => setCurrentView('lista')} 
+            className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${currentView === 'lista' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-indigo-600 hover:bg-indigo-50 border border-indigo-600'}`}
+          >
+            Listar Produtos
+          </button>
+          <button 
+            onClick={() => setCurrentView('cadastro')} 
+            className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${currentView === 'cadastro' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-indigo-600 hover:bg-indigo-50 border border-indigo-600'}`}
+          >
+            Cadastrar Produto
+          </button>
+          <button 
+            onClick={() => setCurrentView('buscar')} 
+            className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${currentView === 'buscar' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-indigo-600 hover:bg-indigo-50 border border-indigo-600'}`}
+          >
+            Buscar Produto
+          </button>
+          {produtoParaEditar && (
+            <button 
+              onClick={() => setCurrentView('editar')} 
+              className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${currentView === 'editar' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-indigo-600 hover:bg-indigo-50 border border-indigo-600'}`}
+            >
+              Editar Produto
+            </button>
+          )}
+        </div>
 
-      <h2>Lista de Produtos</h2>
-      <ul>
-        {produtos.map((p) => (
-          <li key={p.id}>
-            {p.nome} - R$ {p.preco_venda}  
-            <button onClick={() => handleExcluir(p.id)}>Excluir</button>
-          </li>
-        ))}
-      </ul>
+        <div>
+          {currentView === 'lista' && <ListarProdutos onEditClick={handleEditClick} />}
+          {currentView === 'cadastro' && <CadastroProduto />}
+          {currentView === 'buscar' && <BuscarProduto onEditClick={handleEditClick} />}
+          {currentView === 'editar' && <EditarProduto produto={produtoParaEditar} onUpdateComplete={handleUpdateComplete} onCancel={handleCancelEdit} />}
+        </div>
+      </div>
     </div>
   );
 }
