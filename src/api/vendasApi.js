@@ -2,11 +2,6 @@ import axios from "axios";
 
 const API_URL = "http://localhost:3000/vendas"; // rota do backend
 
-// Token do usuário
-const getAuthHeader = () => {
-  const token = localStorage.getItem("token");
-  return { Authorization: `Bearer ${token}` };
-};
 
 // Abrir pedido
 export const abrirPedido = async (cliente_nome) => {
