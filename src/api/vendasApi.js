@@ -2,88 +2,56 @@ import axios from "axios";
 
 const API_URL = "http://localhost:3000/vendas"; // rota do backend
 
-// Abrir novo pedido
+// Token do usuário
+const getAuthHeader = () => {
+  const token = localStorage.getItem("token");
+  return { Authorization: `Bearer ${token}` };
+};
+
+// Abrir pedido
 export const abrirPedido = async (cliente_nome) => {
-  try {
-    const token = localStorage.getItem("token");
-    const response = await axios.post(
-      API_URL,
-      { cliente_nome },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Erro ao abrir pedido:", error);
-    throw error;
-  }
+  const res = await axios.post(API_URL, { cliente_nome }, { headers: getAuthHeader() });
+  return res.data;
 };
 
-// Editar itens do pedido
+// Buscar pedido
+export const buscarPedido = async (pedido) => {
+  const res = await axios.get(`${API_URL}/${pedido}`, { headers: getAuthHeader() });
+  return res.data;
+};
+
+// Editar itens do pedido (nome, quantidade, largura, altura)
 export const editarItensPedido = async (pedido, itens) => {
-  try {
-    const token = localStorage.getItem("token");
-    const response = await axios.put(
-      `${API_URL}/${pedido}/itens`,
-      { itens },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Erro ao editar itens do pedido:", error);
-    throw error;
-  }
+  const res = await axios.put(`${API_URL}/${pedido}/itens`, { itens }, { headers: getAuthHeader() });
+  return res.data;
 };
 
-// Liberar edição de um pedido
-export const liberarEdicaoPedido = async (pedido, motivo_abertura, responsavel_abertura) => {
-  try {
-    const token = localStorage.getItem("token");
-    const response = await axios.put(
-      `${API_URL}/${pedido}/liberar-edicao`,
-      { motivo_abertura, responsavel_abertura },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Erro ao liberar edição:", error);
-    throw error;
-  }
+// Finalizar pedido
+export const finalizarPedido = async (pedido) => {
+  const res = await axios.put(`${API_URL}/${pedido}/finalizar`, {}, { headers: getAuthHeader() });
+  return res.data;
 };
 
 // Cancelar pedido
 export const cancelarPedido = async (pedido, motivo_cancelamento) => {
-  try {
-    const token = localStorage.getItem("token");
-    const response = await axios.put(
-      `${API_URL}/cancelar`,
-      { pedido, motivo_cancelamento },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Erro ao cancelar pedido:", error);
-    throw error;
-  }
+  const res = await axios.put(`${API_URL}/cancelar`, { pedido, motivo_cancelamento }, { headers: getAuthHeader() });
+  return res.data;
 };
 
-// Buscar detalhes de um pedido
-export const buscarPedido = async (pedido) => {
-  try {
-    const token = localStorage.getItem("token");
-    const response = await axios.get(`${API_URL}/${pedido}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Erro ao buscar pedido:", error);
-    throw error;
-  }
+// Liberar edição
+export const liberarEdicaoPedido = async (pedido, motivo_abertura, responsavel_abertura) => {
+  const res = await axios.put(`${API_URL}/${pedido}/liberar-edicao`, { motivo_abertura, responsavel_abertura }, { headers: getAuthHeader() });
+  return res.data;
+};
+
+// Registrar pagamento de pedido
+export const pagarPedido = async (pedido, valor_pagamento, forma_pagamento) => {
+  const res = await axios.post(`${API_URL}/${pedido}/pagar`, { valor_pagamento, forma_pagamento }, { headers: getAuthHeader() });
+  return res.data;
+};
+
+// Registrar pagamento por cliente
+export const pagarCliente = async (clienteNome, valor_pagamento, forma_pagamento) => {
+  const res = await axios.post(`${API_URL}/cliente/${clienteNome}/pagar`, { valor_pagamento, forma_pagamento }, { headers: getAuthHeader() });
+  return res.data;
 };
