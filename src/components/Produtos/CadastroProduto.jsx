@@ -2,28 +2,34 @@ import React, { useState } from 'react';
 // Importação da nova camada de serviço
 import { criarProduto } from '../../services/ProdutosService';
 
-const CadastroProduto = () => {
+const CadastroProduto = ({ voltar }) => {
   const [formData, setFormData] = useState({
     nome: '',
     descricao: '',
-    preco_custo: 0,
-    preco_venda: 0,
-    quantidade_estoque: 0,
+    preco_custo: '',
+    preco_venda: '',
+    quantidade: '',
     codigo_barras: '',
     codigo_referencia: '',
     categoria: '',
-    tipo_produto: 'padrao', // Define 'padrao' como o valor inicial
+    tipo_produto: 'padrao',
   });
   const [message, setMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    // Garante que valores numéricos sejam tratados como números
+    const newValue = (name === 'preco_custo' || name === 'preco_venda' || name === 'quantidade')
+      ? parseFloat(value) || ''
+      : value;
+    setFormData({ ...formData, [name]: newValue });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     setMessage('');
 
     try {
@@ -31,12 +37,13 @@ const CadastroProduto = () => {
       if (data.message) {
         setMessage(data.message);
         setIsSuccess(true);
+        // Limpa o formulário após o sucesso
         setFormData({
           nome: '',
           descricao: '',
-          preco_custo: 0,
-          preco_venda: 0,
-          quantidade_estoque: 0,
+          preco_custo: '',
+          preco_venda: '',
+          quantidade: '',
           codigo_barras: '',
           codigo_referencia: '',
           categoria: '',
@@ -47,6 +54,8 @@ const CadastroProduto = () => {
       console.error('Erro na requisição:', error.message);
       setMessage(error.message || 'Erro de conexão com o servidor.');
       setIsSuccess(false);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -61,7 +70,6 @@ const CadastroProduto = () => {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Formulário com campos de entrada, similar ao seu código original */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label htmlFor="nome" className="block text-sm font-medium text-gray-700">Nome</label>
@@ -103,18 +111,28 @@ const CadastroProduto = () => {
           </div>
           {formData.tipo_produto === 'padrao' && (
             <div>
-              <label htmlFor="quantidade_estoque" className="block text-sm font-medium text-gray-700">Quantidade em Estoque</label>
-              <input type="number" name="quantidade_estoque" id="quantidade_estoque" value={formData.quantidade_estoque} onChange={handleChange} required={formData.tipo_produto === 'padrao'} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+              <label htmlFor="quantidade" className="block text-sm font-medium text-gray-700">Quantidade em Estoque</label>
+              <input type="number" name="quantidade" id="quantidade" value={formData.quantidade} onChange={handleChange} required={formData.tipo_produto === 'padrao'} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
             </div>
           )}
         </div>
 
-        <button
-          type="submit"
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200"
-        >
-          Cadastrar Produto
-        </button>
+        <div className="flex space-x-4">
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex-1 py-2 px-4 rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 transition-colors duration-200"
+          >
+            {loading ? 'Salvando...' : 'Cadastrar Produto'}
+          </button>
+          <button
+            type="button"
+            onClick={voltar}
+            className="flex-1 py-2 px-4 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 transition-colors duration-200"
+          >
+            Voltar
+          </button>
+        </div>
       </form>
     </div>
   );

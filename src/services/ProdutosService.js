@@ -28,7 +28,6 @@ export const criarProduto = async (produto) => {
     const res = await api.post("/produtos", produto);
     return res.data;
   } catch (err) {
-    // Captura a mensagem de erro específica do backend
     throw err.response?.data || { message: "Erro ao criar produto" };
   }
 };
@@ -50,5 +49,15 @@ export const deletarProduto = async (identificador) => {
     return res.data;
   } catch (err) {
     throw err.response?.data || { message: "Erro ao excluir produto" };
+  }
+};
+
+// 🔹 NOVO: Listar produtos por categoria
+export const listarProdutosPorCategoria = async (categoria) => {
+  try {
+    const res = await api.get(`/produtos/categoria/${categoria}`);
+    return res.data;
+  } catch (err) {
+    throw err.response?.data || { message: "Erro ao buscar produtos por categoria" };
   }
 };

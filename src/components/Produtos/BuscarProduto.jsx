@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { buscarProduto } from '../../services/ProdutosService';
 
-const BuscarProduto = () => {
+const BuscarProduto = ({ voltar }) => {
   const [identificador, setIdentificador] = useState('');
   const [produto, setProduto] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -62,6 +62,14 @@ const BuscarProduto = () => {
           <p className="text-gray-600"><strong>Descrição:</strong> {produto.descricao}</p>
         </div>
       )}
+      
+      {/* Botão de Voltar adicionado aqui */}
+      <button 
+        onClick={voltar} 
+        className="mt-6 py-2 px-4 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 transition-colors duration-200"
+      >
+        Voltar
+      </button>
     </div>
   );
 };
