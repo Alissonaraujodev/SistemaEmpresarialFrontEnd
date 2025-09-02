@@ -18,7 +18,7 @@ export default function AbrirPedidoPage({ voltar }) {
     try {
       const response = await abrirPedido(clienteNome || "Cliente Padrão");
       // vai direto para edição de itens
-      navigate(`/vendas/${pedido}/itens/${response.pedido}`);
+      navigate(`/vendas/itens/${res.pedido}`);
     } catch (error) {
       console.error("Erro ao abrir pedido:", error);
       setMessage(error.response?.data?.message || "Erro ao abrir pedido. Tente novamente.");
@@ -83,7 +83,7 @@ export default function AbrirPedidoPage({ voltar }) {
             <ul className="absolute z-10 w-full bg-white rounded-md shadow-lg max-h-48 overflow-y-auto mt-1 border border-gray-200">
               {sugestoes.map((cliente) => (
                 <li
-                  key={cliente.cnpj}
+                  key={cliente.cliente_nome}
                   onClick={() => handleSelectSuggestion(cliente)}
                   className="p-2 cursor-pointer hover:bg-gray-100 text-gray-800 text-sm"
                 >
