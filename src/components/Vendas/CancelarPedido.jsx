@@ -1,38 +1,27 @@
 import { useState } from "react";
-import { cancelarPedido } from "../../api/vendasApi";
+import { cancelarPedido } from "../../services/vendasService";
 
 export default function CancelarPedido({ voltar }) {
-  const [pedidoId, setPedidoId] = useState("");
+  const [pedido, setPedido] = useState("");
   const [motivo, setMotivo] = useState("");
 
   const handleCancelar = async () => {
     try {
-      const response = await cancelarPedido(pedidoId, motivo);
-      alert(response.message);
+      await cancelarPedido(pedido, motivo);
+      alert("Pedido cancelado!");
+      voltar();
     } catch (err) {
-      alert("Erro ao cancelar pedido");
+      alert(err.message);
     }
   };
 
   return (
-    <div style={{ marginTop: "20px" }}>
+    <div>
       <h2>❌ Cancelar Pedido</h2>
-
-      <input
-        type="number"
-        placeholder="ID do pedido"
-        value={pedidoId}
-        onChange={(e) => setPedidoId(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Motivo do cancelamento"
-        value={motivo}
-        onChange={(e) => setMotivo(e.target.value)}
-      />
-
+      <input placeholder="Nº Pedido" value={pedido} onChange={(e) => setPedido(e.target.value)} />
+      <input placeholder="Motivo" value={motivo} onChange={(e) => setMotivo(e.target.value)} />
       <button onClick={handleCancelar}>Cancelar</button>
-      <button onClick={voltar} style={{ marginLeft: "10px" }}>⬅ Voltar</button>
+      <button onClick={voltar}>Voltar</button>
     </div>
   );
 }

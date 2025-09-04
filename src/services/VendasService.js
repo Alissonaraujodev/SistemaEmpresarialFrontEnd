@@ -13,9 +13,9 @@ export const getAllVendas = async () => {
 };
 
 // Abrir novo pedido
-export const abrirPedido = async (dados) => {
+export const abrirPedido = async (cliente_nome) => {
   try {
-    const res = await api.post("/vendas", { dados });
+    const res = await api.post("/vendas", { cliente_nome  });
     return res.data;
   } catch (err) {
     throw err.response?.data || { message: "Erro ao abrir pedido" };

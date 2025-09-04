@@ -1,115 +1,110 @@
-import React, { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { abrirPedido } from "../../api/vendasApi";
-import { listarClientes } from "../../services/ClientesService";
+import { useEffect, useRef, useState } from "react";
+import { abrirPedido } from "../../services/vendasService";
+import api from "../../api/api";
+import EditarPedido from "./EditarPedido";
 
-export default function AbrirPedidoPage({ voltar }) {
-  const [clienteNome, setClienteNome] = useState("");
+export default function AbrirPedido({ voltar }) {
+  const [cliente, setCliente] = useState("");
   const [sugestoes, setSugestoes] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const navigate = useNavigate();
-  const searchTimeout = useRef(null);
+  const [pedidoAberto, setPedidoAberto] = useState(null);
+  const debounceRef = useRef(null);
 
-  // Abrir pedido
-  const handleAbrirPedido = async () => {
-    setLoading(true);
-    setMessage("");
-    try {
-      const response = await abrirPedido(clienteNome || "Cliente Padrão");
-      // vai direto para edição de itens
-      navigate(`/vendas/itens/${res.pedido}`);
-    } catch (error) {
-      console.error("Erro ao abrir pedido:", error);
-      setMessage(error.response?.data?.message || "Erro ao abrir pedido. Tente novamente.");
-    } finally {
-      setLoading(false);
+  // Busca clientes com debounce e aplica filtro startsWith no front
+  const buscarClientes = async (texto) => {
+    const termo = texto.trim();
+    if (termo.length < 1) {
+      setSugestoes([]);
+      return;
     }
-  };
+    try {
+      // Ajuste a rota abaixo para a tua rota real de busca de clientes
+      // Ex.: /clientes?nome=  (supondo que já exista)
+      const res = await api.get(`/clientes?nome=${encodeURIComponent(termo)}`);
+      const lista = Array.isArray(res.data) ? res.data : [];
 
-  // Buscar clientes conforme digitação
-  const handleSearchChange = (e) => {
-    const nome = e.target.value;
-    setClienteNome(nome);
+      const lower = termo.toLowerCase();
+      const filtrados = lista
+        .filter((c) => (c.cliente_nome || "").toLowerCase().startsWith(lower))
+        .slice(0, 10);
 
-    clearTimeout(searchTimeout.current);
-
-    if (nome.length > 1) {
-      searchTimeout.current = setTimeout(async () => {
-        try {
-          const clientesEncontrados = await listarClientes(nome);
-          setSugestoes(clientesEncontrados);
-        } catch (error) {
-          console.error("Erro ao buscar clientes:", error);
-          setSugestoes([]);
-        }
-      }, 400);
-    } else {
+      setSugestoes(filtrados);
+    } catch {
       setSugestoes([]);
     }
   };
 
-  // Selecionar cliente da lista
-  const handleSelectSuggestion = (cliente) => {
-    setClienteNome(cliente.cliente_nome);
-    setSugestoes([]);
+  useEffect(() => {
+    // Debounce: 250ms após digitar
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => buscarClientes(cliente), 250);
+    return () => clearTimeout(debounceRef.current);
+  }, [cliente]);
+
+  const handleAbrir = async () => {
+    const nome = cliente.trim();
+    if (!nome) {
+      alert("Informe o nome do cliente");
+      return;
+    }
+    try {
+      const resp = await abrirPedido(nome); // envia { cliente_nome }
+      // backend retorna: { message, pedido }
+      setPedidoAberto(resp.pedido);
+    } catch (err) {
+      alert(err?.message || "Erro ao abrir pedido");
+    }
   };
 
-  return (
-    <div className="p-8 bg-white rounded-lg shadow-md max-w-lg mx-auto">
-      <h2 className="text-2xl font-bold mb-6 text-slate-800">🛒 Abrir Pedido</h2>
+  if (pedidoAberto) {
+    // Após abrir, vai direto para editar itens
+    return <EditarPedido pedido={pedidoAberto} voltar={voltar} />;
+  }
 
-      {message && (
-        <div className="p-3 rounded-lg text-sm mb-4 bg-red-100 text-red-700">
-          {message}
-        </div>
+  return (
+    <div style={{ maxWidth: 520 }}>
+      <h2>📂 Abrir Pedido</h2>
+
+      <label style={{ display: "block", marginBottom: 8 }}>Cliente</label>
+      <input
+        type="text"
+        placeholder="Digite o nome do cliente"
+        value={cliente}
+        onChange={(e) => setCliente(e.target.value)}
+        style={{ width: "100%", padding: 8 }}
+        autoFocus
+      />
+
+      {/* sugestões (somente os que começam com o que foi digitado) */}
+      {sugestoes.length > 0 && (
+        <ul
+          style={{
+            listStyle: "none",
+            padding: 0,
+            marginTop: 8,
+            border: "1px solid #ddd",
+            borderRadius: 8,
+            maxHeight: 220,
+            overflowY: "auto",
+          }}
+        >
+          {sugestoes.map((c) => (
+            <li
+              key={c.cnpj ?? c.cliente_nome}
+              style={{ padding: "8px 12px", cursor: "pointer" }}
+              onClick={() => {
+                setCliente(c.cliente_nome);
+                setSugestoes([]);
+              }}
+            >
+              {c.cliente_nome}
+            </li>
+          ))}
+        </ul>
       )}
 
-      <div className="space-y-4 relative">
-        <div>
-          <label htmlFor="clienteNome" className="block text-sm font-medium text-gray-700">
-            Nome do Cliente
-          </label>
-          <input
-            id="clienteNome"
-            type="text"
-            placeholder="Nome do cliente (opcional)"
-            value={clienteNome}
-            onChange={handleSearchChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-          />
-
-          {sugestoes.length > 0 && (
-            <ul className="absolute z-10 w-full bg-white rounded-md shadow-lg max-h-48 overflow-y-auto mt-1 border border-gray-200">
-              {sugestoes.map((cliente) => (
-                <li
-                  key={cliente.cliente_nome}
-                  onClick={() => handleSelectSuggestion(cliente)}
-                  className="p-2 cursor-pointer hover:bg-gray-100 text-gray-800 text-sm"
-                >
-                  {cliente.cliente_nome}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <div className="flex space-x-4">
-          <button
-            onClick={handleAbrirPedido}
-            disabled={loading}
-            className="flex-1 py-2 px-4 rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 transition-colors duration-200"
-          >
-            {loading ? "Abrindo..." : "Abrir Pedido"}
-          </button>
-          <button
-            onClick={voltar}
-            type="button"
-            className="flex-1 py-2 px-4 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 transition-colors duration-200"
-          >
-            Voltar
-          </button>
-        </div>
+      <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
+        <button onClick={handleAbrir}>Abrir</button>
+        <button onClick={voltar}>Voltar</button>
       </div>
     </div>
   );

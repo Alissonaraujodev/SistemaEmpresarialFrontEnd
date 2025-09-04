@@ -1,45 +1,29 @@
 import { useState } from "react";
-import { liberarEdicaoPedido } from "../../api/vendasApi";
+import { liberarEdicaoPedido } from "../../services/vendasService";
 
 export default function LiberarPedido({ voltar }) {
-  const [pedidoId, setPedidoId] = useState("");
+  const [pedido, setPedido] = useState("");
   const [motivo, setMotivo] = useState("");
   const [responsavel, setResponsavel] = useState("");
 
   const handleLiberar = async () => {
     try {
-      const response = await liberarEdicaoPedido(pedidoId, motivo, responsavel);
-      alert(response.message);
+      await liberarEdicaoPedido(pedido, motivo, responsavel);
+      alert("Pedido liberado!");
+      voltar();
     } catch (err) {
-      alert("Erro ao liberar edição");
+      alert(err.message);
     }
   };
 
   return (
-    <div style={{ marginTop: "20px" }}>
-      <h2>🔓 Liberar Edição do Pedido</h2>
-
-      <input
-        type="number"
-        placeholder="ID do pedido"
-        value={pedidoId}
-        onChange={(e) => setPedidoId(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Motivo"
-        value={motivo}
-        onChange={(e) => setMotivo(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Responsável"
-        value={responsavel}
-        onChange={(e) => setResponsavel(e.target.value)}
-      />
-
+    <div>
+      <h2>🔓 Liberar Pedido</h2>
+      <input placeholder="Nº Pedido" value={pedido} onChange={(e) => setPedido(e.target.value)} />
+      <input placeholder="Motivo" value={motivo} onChange={(e) => setMotivo(e.target.value)} />
+      <input placeholder="Responsável" value={responsavel} onChange={(e) => setResponsavel(e.target.value)} />
       <button onClick={handleLiberar}>Liberar</button>
-      <button onClick={voltar} style={{ marginLeft: "10px" }}>⬅ Voltar</button>
+      <button onClick={voltar}>Voltar</button>
     </div>
   );
 }

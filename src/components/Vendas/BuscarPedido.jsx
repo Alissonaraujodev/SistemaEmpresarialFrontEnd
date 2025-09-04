@@ -1,41 +1,28 @@
 import { useState } from "react";
-import { buscarPedido } from "../../api/vendasApi";
+import { buscarPedido } from "../../services/vendasService";
 
 export default function BuscarPedido({ voltar }) {
-  const [pedidoId, setPedidoId] = useState("");
-  const [pedido, setPedido] = useState(null);
+  const [pedido, setPedido] = useState("");
+  const [detalhes, setDetalhes] = useState(null);
 
   const handleBuscar = async () => {
     try {
-      const response = await buscarPedido(pedidoId);
-      setPedido(response);
+      const res = await buscarPedido(pedido);
+      setDetalhes(res);
     } catch (err) {
-      alert("Erro ao buscar pedido");
+      alert(err.message);
     }
   };
 
   return (
-    <div style={{ marginTop: "20px" }}>
+    <div>
       <h2>🔍 Buscar Pedido</h2>
-
-      <input
-        type="number"
-        placeholder="ID do pedido"
-        value={pedidoId}
-        onChange={(e) => setPedidoId(e.target.value)}
-      />
+      <input placeholder="Nº Pedido" value={pedido} onChange={(e) => setPedido(e.target.value)} />
       <button onClick={handleBuscar}>Buscar</button>
-      <button onClick={voltar} style={{ marginLeft: "10px" }}>⬅ Voltar</button>
+      <button onClick={voltar}>Voltar</button>
 
-      {pedido && (
-        <div style={{ marginTop: "15px" }}>
-          <h3>📋 Detalhes</h3>
-          <p><strong>Cliente:</strong> {pedido.cliente_nome}</p>
-          <p><strong>Vendedor:</strong> {pedido.vendedor_nome}</p>
-          <p><strong>Status:</strong> {pedido.status_venda}</p>
-          <p><strong>Pagamento:</strong> {pedido.status_pagamento}</p>
-          <p><strong>Total:</strong> R$ {pedido.valor_total}</p>
-        </div>
+      {detalhes && (
+        <pre>{JSON.stringify(detalhes, null, 2)}</pre>
       )}
     </div>
   );
