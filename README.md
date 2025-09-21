@@ -1,12 +1,37 @@
-# React + Vite
+# Sistema de Gerenciamento Empresarial - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este repositório contém o código do frontend do Sistema de Gerenciamento Empresarial, a interface de usuário que se conecta com o backend da aplicação. Desenvolvido para oferecer uma experiência de navegação intuitiva e segura, este projeto é a porta de entrada para todas as funcionalidades de gestão do negócio.
 
-Currently, two official plugins are available:
+**Tecnologias e Ferramentas**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+O projeto frontend está sendo construído com as seguintes tecnologias, focadas em desempenho e eficiência no desenvolvimento:
 
-## Expanding the ESLint configuration
+- React: A biblioteca JavaScript para a construção da interface do usuário.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- HTML, CSS, JavaScript: As linguagens fundamentais da web para a estruturação e estilização das páginas e para a lógica de programação.
+
+- Vite: Uma ferramenta de build e servidor de desenvolvimento que proporciona uma experiência de desenvolvimento extremamente rápida.
+
+- Axios: Uma biblioteca para fazer requisições HTTP, facilitando a comunicação com a API do backend.
+
+**Estado Atual do Projeto**
+
+O projeto encontra-se em desenvolvimento inicial, com as seguintes funcionalidades já implementadas:
+
+- Página de Login: Uma interface segura para autenticação de funcionários via e-mail e senha.
+
+- Configuração da Empresa: Páginas preparadas para a inserção de dados corporativos como Missão, Visão e Valores.
+
+- Estrutura de Rotas: Configuração inicial para o acesso às funcionalidades do sistema após o login, que se comunicará com o backend.
+
+**Visão do Projeto e Próximos Passos**
+
+O futuro deste projeto é evoluir para um sistema robusto e completo, com planos ambiciosos que incluem:
+
+- Expansão para Clientes: Criar uma interface pública para que os clientes possam visualizar produtos, valores e realizar orçamentos.
+
+- Implementação de IA: Adicionar um agente de Inteligência Artificial para auxiliar clientes na criação de orçamentos de forma interativa.
+
+- Funcionalidade Offline: Desenvolver a capacidade do sistema de funcionar em modo offline para certas operações.
+
+- Desenvolvimento de Aplicativo Móvel: Criar um aplicativo nativo ou híbrido para dispositivos móveis, expandindo o acesso ao sistema.
